@@ -1,22 +1,19 @@
-'use client'
-
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import theme from './theme';
+import { metadata } from './metadata';
+import { Providers } from './providers';
+import './globals.css';
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
-}) {
+  children: React.ReactNode;
+}): React.ReactElement {
   return (
     <html lang="zh-CN">
       <body>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          {children}
-        </ThemeProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
-  )
+  );
 }
+
+export { metadata };

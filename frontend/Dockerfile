@@ -1,22 +1,22 @@
-# Dependencies stage
-FROM node:18-alpine AS deps
+# Build stage
+FROM node:18-alpine AS builder
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies with cache optimization
+RUN npm ci --registry=https://mirrors.huaweicloud.com/repository/npm/ \
+    && npm cache clean --force
 
-# Builder stage
-FROM node:18-alpine AS builder
-WORKDIR /app
-
-# Copy deps from previous stage
-COPY --from=deps /app/node_modules ./node_modules
+# Copy source code
 COPY . .
 
-# Build
+# Set environment to production
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Build application
 RUN npm run build
 
 # Production stage
@@ -24,10 +24,15 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy necessary files
-COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3000
 
 EXPOSE 3000
-CMD ["npm", "start"] 
+
+# Start the application
+CMD ["node", "server.js"]

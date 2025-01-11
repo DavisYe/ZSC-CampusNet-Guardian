@@ -1,15 +1,14 @@
 spring:
   # 数据库配置
   datasource:
-    url: jdbc:mysql://localhost:3306/${MYSQL_DATABASE:campus_repair}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:campus_repair}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: ${MYSQL_USER:repair_user}
-    password: ${MYSQL_PASSWORD:your_mysql_password}
+    password: ${MYSQL_PASSWORD:repair_password}
     driver-class-name: com.mysql.cj.jdbc.Driver
     # 数据库初始化配置
     sql:
       init:
-        mode: always
-        continue-on-error: true
+        mode: never
     
   # Redis配置
   data:
@@ -51,12 +50,6 @@ logging:
     com.zsxyww.backend: DEBUG
     org.springframework.web: DEBUG
     org.springframework.security: DEBUG
-    
-# MyBatis-Plus配置
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  mapper-locations: classpath*:mapper/*.xml
 
 # 开发环境特定配置
 dev:

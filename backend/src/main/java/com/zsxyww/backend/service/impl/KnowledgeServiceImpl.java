@@ -1,5 +1,7 @@
 package com.zsxyww.backend.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zsxyww.backend.exception.BusinessException;
@@ -11,6 +13,7 @@ import com.zsxyww.backend.service.KnowledgeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,12 +60,16 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         }
         
         // 验证是否有子分类
-        if (categoryMapper.countChildren(categoryId) > 0) {
+        LambdaQueryWrapper<KnowledgeCategory> childrenQuery = new LambdaQueryWrapper<>();
+        childrenQuery.eq(KnowledgeCategory::getParentId, categoryId);
+        if (categoryMapper.selectCount(childrenQuery) > 0) {
             throw new BusinessException("存在子分类，无法删除");
         }
         
         // 验证是否有文章
-        if (categoryMapper.countArticles(categoryId) > 0) {
+        LambdaQueryWrapper<KnowledgeArticle> articleQuery = new LambdaQueryWrapper<>();
+        articleQuery.eq(KnowledgeArticle::getCategoryId, categoryId);
+        if (articleMapper.selectCount(articleQuery) > 0) {
             throw new BusinessException("分类下存在文章，无法删除");
         }
         
@@ -128,7 +135,20 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public IPage<KnowledgeArticle> getArticleList(Long categoryId, String keyword, Integer page, Integer size) {
-        return articleMapper.selectArticleList(new Page<>(page, size), categoryId, keyword);
+        LambdaQueryWrapper<KnowledgeArticle> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(categoryId != null, KnowledgeArticle::getCategoryId, categoryId)
+                .and(StringUtils.hasText(keyword), q -> q
+                        .like(KnowledgeArticle::getTitle, keyword)
+                        .or()
+                        .like(KnowledgeArticle::getContent, keyword)
+                        .or()
+                        .like(KnowledgeArticle::getTags, keyword)
+                        .or()
+                        .like(KnowledgeArticle::getKeywords, keyword))
+                .orderByDesc(KnowledgeArticle::getIsTop)
+                .orderByDesc(KnowledgeArticle::getSort)
+                .orderByDesc(KnowledgeArticle::getCreateTime);
+        return articleMapper.selectPage(new Page<>(page, size), queryWrapper);
     }
 
     @Override
@@ -143,24 +163,40 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     @Override
     @Transactional
     public void incrementViewCount(Long articleId) {
-        articleMapper.incrementViewCount(articleId);
+        LambdaUpdateWrapper<KnowledgeArticle> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(KnowledgeArticle::getId, articleId)
+                .setSql("view_count = view_count + 1");
+        articleMapper.update(null, updateWrapper);
     }
 
     @Override
     @Transactional
     public void likeArticle(Long articleId) {
-        articleMapper.incrementLikeCount(articleId);
+        LambdaUpdateWrapper<KnowledgeArticle> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(KnowledgeArticle::getId, articleId)
+                .setSql("like_count = like_count + 1");
+        articleMapper.update(null, updateWrapper);
     }
 
     @Override
     @Transactional
     public void favoriteArticle(Long articleId) {
-        articleMapper.incrementFavoriteCount(articleId);
+        LambdaUpdateWrapper<KnowledgeArticle> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(KnowledgeArticle::getId, articleId)
+                .setSql("favorite_count = favorite_count + 1");
+        articleMapper.update(null, updateWrapper);
     }
 
     @Override
     public List<KnowledgeArticle> getRecommendArticles(Integer limit) {
-        return articleMapper.selectRecommendArticles(limit);
+        LambdaQueryWrapper<KnowledgeArticle> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(KnowledgeArticle::getStatus, 1)
+                .orderByDesc(KnowledgeArticle::getIsRecommend)
+                .orderByDesc(KnowledgeArticle::getViewCount)
+                .orderByDesc(KnowledgeArticle::getLikeCount)
+                .orderByDesc(KnowledgeArticle::getFavoriteCount)
+                .last("LIMIT " + limit);
+        return articleMapper.selectList(queryWrapper);
     }
 
     /**

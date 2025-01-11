@@ -1,16 +1,19 @@
 /** @type {import('next').NextConfig} */
-import withPWA from 'next-pwa'
-
-const nextConfig = withPWA({
-  dest: 'public',
-  disable: process.env.NODE_ENV === 'development',
-})({
+const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
-  i18n: {
-    locales: ['zh-CN'],
-    defaultLocale: 'zh-CN',
+  output: 'standalone',
+  images: {
+    unoptimized: true
   },
-})
+  transpilePackages: ['@mui/material', '@mui/system', '@mui/icons-material'],
+  modularizeImports: {
+    '@mui/icons-material': {
+      transform: '@mui/icons-material/{{member}}',
+    },
+    '@mui/material': {
+      transform: '@mui/material/{{member}}',
+    },
+  },
+}
 
 export default nextConfig
