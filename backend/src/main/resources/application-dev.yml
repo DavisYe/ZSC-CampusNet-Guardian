@@ -1,0 +1,52 @@
+spring:
+  # 数据库配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/${MYSQL_DATABASE:campus_repair}
+    username: ${MYSQL_USER:repair_user}
+    password: ${MYSQL_PASSWORD:your_mysql_password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    
+  # Redis配置
+  redis:
+    host: ${SPRING_REDIS_HOST:localhost}
+    port: 6379
+    password: ${REDIS_PASSWORD:your_redis_password}
+    database: 0
+    
+  # RabbitMQ配置
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: 5672
+    username: ${RABBITMQ_USER:repair_user}
+    password: ${RABBITMQ_PASSWORD:your_rabbitmq_password}
+    
+        
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.campus.repair: DEBUG
+    org.springframework.web: DEBUG
+    
+# 安全配置
+security:
+  jwt:
+    secret: ${JWT_SECRET:your_jwt_secret_dev}
+    expiration: 86400000 # 24小时
+    
+# 文件上传配置
+upload:
+  path: ${UPLOAD_PATH:./uploads}
+  max-size: 10MB 
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    sql-session-factory: 
+      mapper-locations: classpath*:mapper/*.xml
+  # 分页插件配置
+  pagehelper:
+    helper-dialect: mysql
+    reasonable: true
+    support-methods-arguments: true
+    params: count=countSql 

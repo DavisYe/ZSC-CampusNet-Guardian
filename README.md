@@ -466,19 +466,46 @@ docker-compose ps
 ## 开发指南
 
 ### 项目结构
+
+<details>
+<summary>目录结构</summary>
+
 ```
-src/
-├── frontend/          # Next.js前端项目
-│   └── README.md     # 前端开发文档
-├── backend/          # Spring Boot后端项目
-│   └── README.md    # 后端开发文档
-├── docs/            # 项目文档
-│   ├── README.md    # 文档索引
-│   ├── api/         # API文档
-│   ├── design/      # 设计文档
-│   └── deploy/      # 部署文档
-└── README.md        # 项目说明文档
+.
+├── frontend/                        # Next.js前端项目
+│   ├── src/                        # 源代码目录
+│   │   ├── app/                    # Next.js 13+ App目录
+│   │   │   ├── globals.css        # 全局样式
+│   │   │   ├── layout.tsx        # 根布局组件
+│   │   │   └── page.tsx          # 首页组件
+│   │   └── theme.ts              # 主题配置
+│   ├── public/                    # 静态资源
+│   ├── next.config.ts            # Next.js配置
+│   ├── package.json              # 依赖配置
+│   └── tsconfig.json             # TypeScript配置
+├── backend/                       # Spring Boot后端项目
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/zsxyww/backend/
+│   │   │   │   ├── config/      # 配置类
+│   │   │   │   └── BackendApplication.java
+│   │   │   └── resources/
+│   │   │       ├── application.yml      # 主配置文件
+│   │   │       ├── application-dev.yml  # 开发环境配置
+│   │   │       └── application-prod.yml # 生产环境配置
+│   │   └── test/                 # 测试目录
+│   ├── pom.xml                   # Maven配置
+│   └── Dockerfile               # 后端Docker构建文件
+├── nginx/                        # Nginx配置
+│   └── nginx.conf               # Nginx主配置文件
+├── docs/                        # 项目文档
+├── docker-compose.yml           # Docker编排配置
+├── docker-compose.override.yml  # Docker本地开发配置
+├── .env.example                # 环境变量示例
+└── README.md                   # 项目说明文档
 ```
+
+</details>
 
 <details>
 <summary>frontend/README.md</summary>
