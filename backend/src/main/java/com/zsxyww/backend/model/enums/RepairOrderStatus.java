@@ -52,4 +52,22 @@ public enum RepairOrderStatus {
         this.code = code;
         this.description = description;
     }
+
+    /**
+     * 根据状态码获取枚举值
+     *
+     * @param code 状态码
+     * @return 对应的枚举值，如果没有找到返回null
+     */
+    public static RepairOrderStatus fromCode(Integer code) {
+        if (code == null) {
+            return null;
+        }
+        for (RepairOrderStatus status : RepairOrderStatus.values()) {
+            if (status.getCode() == code) {
+                return status;
+            }
+        }
+        return null;
+    }
 }

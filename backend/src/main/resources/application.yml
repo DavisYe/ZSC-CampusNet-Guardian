@@ -3,6 +3,14 @@ spring:
     active: ${SPRING_PROFILES_ACTIVE:dev}
   application:
     name: campus-repair
+  # 数据库初始化配置
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
+      data-locations: classpath:db/data.sql
+      continue-on-error: false
+      encoding: UTF-8
 
 server:
   port: ${PORT:8080}
@@ -26,4 +34,41 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: true
-    call-setters-on-nulls: true 
+    call-setters-on-nulls: true
+  # Mapper XML位置
+  mapper-locations: classpath*:mapper/*.xml
+  # 实体类包路径
+  type-aliases-package: com.zsxyww.backend.model.entity
+  # 枚举类包路径
+  type-enums-package: com.zsxyww.backend.model.enums
+
+# 文件上传配置
+upload:
+  path: ${UPLOAD_PATH:./uploads}
+  max-size: 10MB
+  allowed-types:
+    - image/jpeg
+    - image/png
+    - image/gif
+    - image/bmp
+    - image/webp
+  url-prefix: /uploads/
+
+# 安全配置
+security:
+  jwt:
+    secret: ${JWT_SECRET:your_jwt_secret_key}
+    expiration: 86400000 # 24小时
+    token-prefix: "Bearer "
+    header: "Authorization"
+    parameter-name: "token"
+    ignore-urls:
+      - /api/auth/login
+      - /api/auth/register
+      - /api/auth/captcha
+      - /api/knowledge/articles/list
+      - /api/knowledge/articles/detail/**
+      - /api/knowledge/categories/tree
+      - /uploads/**
+      - /swagger-ui/**
+      - /v3/api-docs/**

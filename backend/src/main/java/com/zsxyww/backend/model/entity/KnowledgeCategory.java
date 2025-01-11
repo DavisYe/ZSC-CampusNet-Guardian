@@ -1,13 +1,15 @@
 package com.zsxyww.backend.model.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.zsxyww.backend.model.base.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 /**
  * 知识库分类实体类
- * 用于对知识库文章进行分类管理
  *
  * @author DavisYe
  * @since 1.0.0
@@ -24,7 +26,6 @@ public class KnowledgeCategory extends BaseEntity {
     
     /**
      * 分类编码
-     * 系统中使用的唯一标识
      */
     private String code;
     
@@ -52,4 +53,11 @@ public class KnowledgeCategory extends BaseEntity {
      * 是否启用
      */
     private Boolean enabled;
+    
+    /**
+     * 子分类列表
+     * 不映射到数据库
+     */
+    @TableField(exist = false)
+    private List<KnowledgeCategory> children;
 }
