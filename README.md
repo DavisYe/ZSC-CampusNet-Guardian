@@ -122,13 +122,6 @@
 <details>
 <summary>工作人员管理</summary>
 
-- 区域划分：
-  - 北门
-  - 东门
-  - 香晖
-  - 岐头
-  - 朝晖
-  - 凤翔
 - 排班规则：
   - 按区域进行排班
   - 每个区域设一名组长
@@ -578,4 +571,4 @@ src/
 
 ## 许可证
 
-MIT License
+[MIT License](LICENSE)
