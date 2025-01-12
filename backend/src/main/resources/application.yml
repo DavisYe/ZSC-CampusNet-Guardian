@@ -1,7 +1,6 @@
 spring:
   profiles:
-    # active: ${SPRING_PROFILES_ACTIVE:dev}
-    active: test
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   application:
     name: campus-repair
   # 数据库初始化配置
@@ -11,9 +10,6 @@ spring:
       schema-locations: classpath:db/schema.sql
       data-locations: classpath:db/data.sql
       encoding: UTF-8
-  docker:
-    compose:
-      enabled: false
 
 server:
   port: ${PORT:8080}
@@ -31,7 +27,7 @@ mybatis-plus:
   type-aliases-package: com.zsxyww.backend.model.entity
   configuration:
     map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
     cache-enabled: false
   global-config:
     db-config:
@@ -52,30 +48,28 @@ upload:
     - image/webp
   url-prefix: /uploads/
 
-# 安全配置
-security:
-  jwt:
-    secret: ${JWT_SECRET:your_jwt_secret_key}
-    expiration: 86400000 # 24小时
-    token-prefix: "Bearer "
-    header: "Authorization"
-    parameter-name: "token"
-    ignore-urls:
-      - /api/auth/login
-      - /api/auth/register
-      - /api/auth/captcha
-      - /api/knowledge/articles/list
-      - /api/knowledge/articles/detail/**
-      - /api/knowledge/categories/tree
-      - /uploads/**
-      - /swagger-ui/**
-      - /v3/api-docs/**
-      - /doc.html
-      - /webjars/**
+# springdoc配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.zsxyww.backend.controller
+  default-flat-param-object: true
+  show-actuator: false
 
 # knife4j配置
 knife4j:
   enable: true
+  basic:
+    enable: false
+    username: admin
+    password: 123456
   setting:
     language: zh_cn
     swagger-model-name: 实体类列表

@@ -48,8 +48,17 @@ public class JwtConfig {
         "/api/auth/login",
         "/api/auth/register",
         "/api/auth/captcha",
-        "/api/knowledge/article/list",
-        "/api/knowledge/article/detail/**",
-        "/api/knowledge/category/list"
+        "/api/knowledge/articles/list",
+        "/api/knowledge/articles/detail/**",
+        "/api/knowledge/categories/tree",
+        "/uploads/**",
+        "/swagger-ui/**",
+        "/swagger-ui",
+        "/v3/api-docs/**",
+        "/v3/api-docs",
+        "/doc.html",
+        "/webjars/**",
+        "swagger-resources",
+        "swagger-resources/**"
     };
 }

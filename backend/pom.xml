@@ -33,7 +33,6 @@
 		<knife4j.version>4.3.0</knife4j.version>
 	</properties>
 	<dependencies>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -56,6 +55,7 @@
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 
+		<!-- 开发工具，仅在开发环境使用 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -95,10 +95,13 @@
 			<artifactId>mybatis-plus-boot-starter</artifactId>
 			<version>${mybatis-plus.version}</version>
 		</dependency>
+		
+		<!-- 代码生成器，仅在开发环境使用 -->
 		<dependency>
 			<groupId>com.baomidou</groupId>
 			<artifactId>mybatis-plus-generator</artifactId>
 			<version>${mybatis-plus.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		
 		<!-- JWT相关依赖 -->
@@ -120,11 +123,12 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Knife4j API文档 -->
+		<!-- API文档，仅在开发环境使用 -->
 		<dependency>
 			<groupId>com.github.xiaoymin</groupId>
 			<artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
 			<version>${knife4j.version}</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
