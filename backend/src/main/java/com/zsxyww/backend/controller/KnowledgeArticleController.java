@@ -22,7 +22,7 @@ import java.util.List;
  */
 @Validated
 @RestController
-@RequestMapping("/api/knowledge/articles")
+@RequestMapping("/knowledge/articles")
 @RequiredArgsConstructor
 public class KnowledgeArticleController {
 

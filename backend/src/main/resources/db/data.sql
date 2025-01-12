@@ -41,7 +41,7 @@ VALUES (3, 11, NOW(), NOW(), 0);
 -- 初始化管理员账号
 -- 密码为admin123，使用BCryptPasswordEncoder加密
 INSERT INTO user (id, username, password, phone, email, real_name, student_id, enabled, account_non_expired, account_non_locked, credentials_non_expired, create_time, update_time, deleted)
-VALUES (1, 'admin', '$2a$10$ow41lrJ7nxQ35wUOVpzj/.VG4eGe5jbBqVQxH5M5FJSCQw6NHVMlq', '13800138000', 'admin@example.com', '系统管理员', '00000000', 1, 1, 1, 1, NOW(), NOW(), 0);
+VALUES (1, 'admin', '$2a$12$U0R7LVOhDGxQUaALnNKIb.IYpE0odEoav3aRZ5ktNblO0Z1O5/mba', '13800138000', 'admin@example.com', '系统管理员', '00000000', 1, 1, 1, 1, NOW(), NOW(), 0);
 
 -- 初始化管理员角色
 INSERT INTO user_role (user_id, role_id, create_time, update_time, deleted)
@@ -75,4 +75,4 @@ VALUES
 -- 用户名：admin
 -- 密码：admin123
 -- 密码加密方式：BCryptPasswordEncoder
--- 加密后的密码：$2a$10$ow41lrJ7nxQ35wUOVpzj/.VG4eGe5jbBqVQxH5M5FJSCQw6NHVMlq
+-- 加密后的密码：$2a$12$U0R7LVOhDGxQUaALnNKIb.IYpE0odEoav3aRZ5ktNblO0Z1O5/mba

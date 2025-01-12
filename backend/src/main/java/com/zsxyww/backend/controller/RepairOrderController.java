@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "报修工单管理", description = "报修工单相关接口")
 @Validated
 @RestController
-@RequestMapping("/api/repair-orders")
+@RequestMapping("/repair-orders")
 @RequiredArgsConstructor
 public class RepairOrderController {
 

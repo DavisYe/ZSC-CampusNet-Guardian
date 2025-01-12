@@ -59,6 +59,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            // 设置高优先级，确保在ResourceHttpRequestHandler之前执行
+            .securityMatcher("/**")
             // 禁用CSRF
             .csrf(csrf -> csrf.disable())
             // 启用CORS
@@ -87,7 +89,7 @@ public class SecurityConfig {
                 // 允许匿名访问的接口
                 .requestMatchers(jwtConfig.getIgnoreUrls()).permitAll()
                 // 允许文件上传接口
-                .requestMatchers("/api/files/upload", "/api/files/batch-upload").authenticated()
+                .requestMatchers("/files/upload", "/files/batch-upload").authenticated()
                 // 其他所有请求需要认证
                 .anyRequest().authenticated()
             )

@@ -6,11 +6,16 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
+    private static final String SECURITY_SCHEME_NAME = "JWT认证";
+
     @Bean
     public GroupedOpenApi publicApi() {
         return GroupedOpenApi.builder()
@@ -34,6 +39,14 @@ public class SwaggerConfig {
                                 .url("https://www.apache.org/licenses/LICENSE-2.0.html")))
                 .externalDocs(new ExternalDocumentation()
                         .description("项目GitHub地址")
-                        .url("https://github.com/zsxyww/school-network-maintenance-system"));
+                        .url("https://github.com/zsxyww/school-network-maintenance-system"))
+                .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
+                .components(new Components()
+                        .addSecuritySchemes(SECURITY_SCHEME_NAME, new SecurityScheme()
+                                .name(SECURITY_SCHEME_NAME)
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")
+                                .description("请输入JWT token")));
     }
 }

@@ -1,0 +1,51 @@
+{
+  "groups": [
+    {
+      "name": "spring.security.jwt",
+      "type": "com.zsxyww.backend.config.JwtConfig",
+      "sourceType": "com.zsxyww.backend.config.JwtConfig"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.security.jwt.secret",
+      "type": "java.lang.String",
+      "description": "JWT密钥",
+      "sourceType": "com.zsxyww.backend.config.JwtConfig"
+    },
+    {
+      "name": "spring.security.jwt.expiration",
+      "type": "java.lang.Long",
+      "description": "token有效期（毫秒）",
+      "sourceType": "com.zsxyww.backend.config.JwtConfig"
+    },
+    {
+      "name": "spring.security.jwt.token-prefix",
+      "type": "java.lang.String",
+      "description": "token前缀",
+      "sourceType": "com.zsxyww.backend.config.JwtConfig",
+      "defaultValue": "Bearer "
+    },
+    {
+      "name": "spring.security.jwt.header",
+      "type": "java.lang.String",
+      "description": "token在header中的key",
+      "sourceType": "com.zsxyww.backend.config.JwtConfig",
+      "defaultValue": "Authorization"
+    },
+    {
+      "name": "spring.security.jwt.parameter-name",
+      "type": "java.lang.String",
+      "description": "token在请求参数中的key",
+      "sourceType": "com.zsxyww.backend.config.JwtConfig",
+      "defaultValue": "token"
+    },
+    {
+      "name": "spring.security.jwt.ignore-urls",
+      "type": "java.lang.String[]",
+      "description": "不需要认证的路径",
+      "sourceType": "com.zsxyww.backend.config.JwtConfig"
+    }
+  ],
+  "hints": []
+}

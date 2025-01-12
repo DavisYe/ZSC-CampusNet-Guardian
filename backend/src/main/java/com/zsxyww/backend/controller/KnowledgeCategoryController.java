@@ -17,7 +17,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @RestController
-@RequestMapping("/api/knowledge/categories")
+@RequestMapping("/knowledge/categories")
 @RequiredArgsConstructor
 public class KnowledgeCategoryController {
 

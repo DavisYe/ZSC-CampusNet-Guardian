@@ -2,8 +2,8 @@ package com.zsxyww.backend.util;
 
 import com.zsxyww.backend.config.JwtConfig;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -24,16 +24,22 @@ import java.util.function.Function;
  */
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class JwtUtil {
 
     private final JwtConfig jwtConfig;
+    private final SecretKey secretKey;
 
     /**
-     * 生成JWT密钥
+     * 构造函数，使用Spring的构造函数注入
      */
-    private SecretKey getSecretKey() {
-        return Keys.hmacShaKeyFor(jwtConfig.getSecret().getBytes(StandardCharsets.UTF_8));
+    public JwtUtil(JwtConfig jwtConfig) {
+        this.jwtConfig = jwtConfig;
+        // 使用配置的secret直接生成密钥
+        byte[] keyBytes = jwtConfig.getSecret().getBytes(StandardCharsets.UTF_8);
+        // 确保密钥长度至少为256位
+        byte[] paddedKeyBytes = new byte[32]; // 256 bits = 32 bytes
+        System.arraycopy(keyBytes, 0, paddedKeyBytes, 0, Math.min(keyBytes.length, paddedKeyBytes.length));
+        this.secretKey = Keys.hmacShaKeyFor(paddedKeyBytes);
     }
 
     /**
@@ -76,7 +82,7 @@ public class JwtUtil {
      */
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(getSecretKey())
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -120,7 +126,7 @@ public class JwtUtil {
                 .setSubject(subject)
                 .setIssuedAt(createdDate)
                 .setExpiration(expirationDate)
-                .signWith(getSecretKey())
+                .signWith(secretKey)
                 .compact();
     }
 
@@ -146,7 +152,7 @@ public class JwtUtil {
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(getSecretKey())
+                    .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
             return true;

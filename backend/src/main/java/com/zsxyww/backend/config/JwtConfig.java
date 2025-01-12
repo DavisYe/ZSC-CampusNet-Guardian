@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "security.jwt")
+@ConfigurationProperties(prefix = "spring.security.jwt")
 public class JwtConfig {
     
     /**
@@ -45,12 +45,12 @@ public class JwtConfig {
      * 不需要认证的路径
      */
     private String[] ignoreUrls = {
-        "/api/auth/login",
-        "/api/auth/register",
-        "/api/auth/captcha",
-        "/api/knowledge/articles/list",
-        "/api/knowledge/articles/detail/**",
-        "/api/knowledge/categories/tree",
+        "/auth/login",
+        "/auth/register",
+        "/auth/captcha",
+        "/knowledge/articles/list",
+        "/knowledge/articles/detail/**",
+        "/knowledge/categories/tree",
         "/uploads/**",
         "/swagger-ui/**",
         "/swagger-ui",

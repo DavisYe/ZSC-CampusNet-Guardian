@@ -3,6 +3,11 @@ spring:
     active: ${SPRING_PROFILES_ACTIVE:dev}
   application:
     name: campus-repair
+  # JWT配置
+  security:
+    jwt:
+      secret: ${JWT_SECRET:your_jwt_secret_key_must_be_very_long_and_secure_at_least_256_bits}
+      expiration: 86400000  # 24小时
   # 数据库初始化配置
   sql:
     init:
