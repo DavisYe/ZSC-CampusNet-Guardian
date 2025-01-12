@@ -1,0 +1,67 @@
+spring:
+  # 数据库配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/test_database
+    username: test_user
+    password: test_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 3
+      
+  # Redis配置
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: test_redis_password
+      database: 1
+      lettuce:
+        pool:
+          max-active: 4
+          max-idle: 4
+          min-idle: 1
+        
+  # RabbitMQ配置
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: test_rabbitmq_user
+    password: test_rabbitmq_password
+    listener:
+      simple:
+        concurrency: 3
+        max-concurrency: 6
+        
+  # 日志配置
+  logging:
+    level:
+      root: INFO
+      com.zsxyww.backend: DEBUG
+    file:
+      name: /var/log/zsxyww-backend/test-application.log
+      max-size: 50MB
+      max-history: 10
+      
+  # 安全配置
+  security:
+    jwt:
+      secret: test_jwt_secret
+      expiration: 3600000
+      
+  # 文件上传配置
+  upload:
+    path: /data/test-uploads
+    max-size: 5MB
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    sql-session-factory:
+      mapper-locations: classpath*:mapper/*.xml
+  # 分页插件配置
+  pagehelper:
+    helper-dialect: mysql
+    reasonable: true
+    support-methods-arguments: true
+    params: count=countSql

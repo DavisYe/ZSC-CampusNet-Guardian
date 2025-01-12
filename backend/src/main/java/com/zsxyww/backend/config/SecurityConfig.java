@@ -82,7 +82,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 // 允许访问静态资源
                 .requestMatchers(fileConfig.getUrlPrefix() + "**").permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                // 允许访问Swagger和Knife4j相关资源
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/doc.html", "/webjars/**").permitAll()
                 // 允许匿名访问的接口
                 .requestMatchers(jwtConfig.getIgnoreUrls()).permitAll()
                 // 允许文件上传接口

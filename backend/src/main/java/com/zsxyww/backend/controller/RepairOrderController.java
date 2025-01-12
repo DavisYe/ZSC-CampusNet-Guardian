@@ -16,6 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
  * @author DavisYe
  * @since 1.0.0
  */
+@Tag(name = "报修工单管理", description = "报修工单相关接口")
 @Validated
 @RestController
 @RequestMapping("/api/repair-orders")
@@ -32,12 +36,11 @@ public class RepairOrderController {
 
     private final RepairOrderService repairOrderService;
 
-    /**
-     * 创建工单
-     */
+    @Operation(summary = "创建报修工单", description = "用户创建新的报修工单")
     @PostMapping
-    public Result<RepairOrderResponse> createOrder(@RequestBody @Valid CreateRepairOrderRequest request,
-                                                 @AuthenticationPrincipal User user) {
+    public Result<RepairOrderResponse> createOrder(
+            @Parameter(description = "工单创建请求参数") @RequestBody @Valid CreateRepairOrderRequest request,
+            @Parameter(hidden = true) @AuthenticationPrincipal User user) {
         RepairOrder order = new RepairOrder();
         order.setType(request.getType());
         order.setDescription(request.getDescription());
@@ -49,13 +52,12 @@ public class RepairOrderController {
         return Result.success(convertToResponse(repairOrderService.createOrder(order)));
     }
 
-    /**
-     * 更新工单状态
-     */
+    @Operation(summary = "更新工单状态", description = "管理员或维修人员更新工单的处理状态")
     @PutMapping("/{orderId}/status")
     @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
-    public Result<RepairOrderResponse> updateOrderStatus(@PathVariable Long orderId,
-                                                       @RequestBody @Valid UpdateOrderStatusRequest request) {
+    public Result<RepairOrderResponse> updateOrderStatus(
+            @Parameter(description = "工单ID") @PathVariable Long orderId,
+            @Parameter(description = "状态更新请求参数") @RequestBody @Valid UpdateOrderStatusRequest request) {
         RepairOrder order = repairOrderService.updateOrderStatus(orderId, request.getStatus(), request.getRemark());
         return Result.success(convertToResponse(order));
     }
@@ -71,13 +73,12 @@ public class RepairOrderController {
         return Result.success(convertToResponse(order));
     }
 
-    /**
-     * 评价工单
-     */
+    @Operation(summary = "评价工单", description = "用户对已完成的工单进行评价")
     @PutMapping("/{orderId}/evaluate")
-    public Result<RepairOrderResponse> evaluateOrder(@PathVariable Long orderId,
-                                                   @RequestParam @Min(1) @Max(5) Integer rating,
-                                                   @RequestParam(required = false) String evaluation) {
+    public Result<RepairOrderResponse> evaluateOrder(
+            @Parameter(description = "工单ID") @PathVariable Long orderId,
+            @Parameter(description = "评分(1-5)") @RequestParam @Min(1) @Max(5) Integer rating,
+            @Parameter(description = "评价内容") @RequestParam(required = false) String evaluation) {
         RepairOrder order = repairOrderService.evaluateOrder(orderId, rating, evaluation);
         return Result.success(convertToResponse(order));
     }
@@ -105,24 +106,22 @@ public class RepairOrderController {
         return Result.success(orders.convert(this::convertToResponse));
     }
 
-    /**
-     * 获取所有工单列表
-     */
+    @Operation(summary = "获取所有工单列表", description = "管理员获取所有工单的列表，支持分页和状态、类型筛选")
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public Result<IPage<RepairOrderResponse>> getAllOrders(@RequestParam(defaultValue = "1") Integer page,
-                                                         @RequestParam(defaultValue = "10") Integer size,
-                                                         @RequestParam(required = false) Integer status,
-                                                         @RequestParam(required = false) Integer type) {
+    public Result<IPage<RepairOrderResponse>> getAllOrders(
+            @Parameter(description = "页码，默认1") @RequestParam(defaultValue = "1") Integer page,
+            @Parameter(description = "每页大小，默认10") @RequestParam(defaultValue = "10") Integer size,
+            @Parameter(description = "工单状态") @RequestParam(required = false) Integer status,
+            @Parameter(description = "工单类型") @RequestParam(required = false) Integer type) {
         IPage<RepairOrder> orders = repairOrderService.getAllOrders(status, type, page, size);
         return Result.success(orders.convert(this::convertToResponse));
     }
 
-    /**
-     * 获取工单详情
-     */
+    @Operation(summary = "获取工单详情", description = "根据工单ID获取工单的详细信息")
     @GetMapping("/{orderId}")
-    public Result<RepairOrderResponse> getOrderDetail(@PathVariable @NotNull Long orderId) {
+    public Result<RepairOrderResponse> getOrderDetail(
+            @Parameter(description = "工单ID") @PathVariable @NotNull Long orderId) {
         RepairOrder order = repairOrderService.getOrderDetail(orderId);
         return Result.success(convertToResponse(order));
     }

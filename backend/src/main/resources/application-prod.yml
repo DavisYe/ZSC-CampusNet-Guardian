@@ -10,16 +10,17 @@ spring:
       minimum-idle: 5
       
   # Redis配置
-  redis:
-    host: ${SPRING_REDIS_HOST}
-    port: 6379
-    password: ${REDIS_PASSWORD}
-    database: 0
-    lettuce:
-      pool:
-        max-active: 8
-        max-idle: 8
-        min-idle: 2
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST}
+      port: 6379
+      password: ${REDIS_PASSWORD}
+      database: 0
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 2
         
   # RabbitMQ配置
   rabbitmq:
@@ -31,28 +32,29 @@ spring:
       simple:
         concurrency: 5
         max-concurrency: 10
+        
+        
+
+  # 日志配置
+  logging:
+    level:
+      root: WARN
+      com.campus.repair: INFO
+    file:
+      name: /var/log/campus-repair/application.log
+      max-size: 100MB
+      max-history: 30
       
+  # 安全配置
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      expiration: 86400000
       
-# 日志配置
-logging:
-  level:
-    root: WARN
-    com.campus.repair: INFO
-  file:
-    name: /var/log/campus-repair/application.log
-    max-size: 100MB
-    max-history: 30
-    
-# 安全配置
-security:
-  jwt:
-    secret: ${JWT_SECRET}
-    expiration: 86400000
-    
-# 文件上传配置
-upload:
-  path: ${UPLOAD_PATH:/data/uploads}
-  max-size: 10MB 
+  # 文件上传配置
+  upload:
+    path: ${UPLOAD_PATH:/data/uploads}
+    max-size: 10MB
 
 mybatis-plus:
   configuration:
@@ -64,4 +66,4 @@ mybatis-plus:
     helper-dialect: mysql
     reasonable: true
     support-methods-arguments: true
-    params: count=countSql 
+    params: count=countSql

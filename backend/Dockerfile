@@ -36,12 +36,10 @@ COPY . .
 
 # Build with debug output
 RUN mvn clean package -DskipTests \
-    && echo "=== Listing target directory ===" \
+    && pwd \
     && ls -la target \
-    && echo "=== Checking for JAR file ===" \
     && find /app -name "*.jar" -type f \
-    && echo "=== JAR file details ===" \
-    && ls -la target/backend-1.0.0.jar
+    && mv target/backend-1.0.0.jar target/app.jar
 
 # Production stage
 FROM openjdk:17-jdk-slim
@@ -51,16 +49,10 @@ WORKDIR /app
 RUN echo "=== Contents of /app before copy ===" && ls -la /app
 
 # Copy JAR file with explicit name and debug output
-COPY --from=builder /app/target/backend-1.0.0.jar /app/app.jar
+COPY --from=builder /app/target/*.jar /app/app.jar
 
-# Debug: List contents and verify permissions after copy
-RUN echo "=== Contents of /app after copy ===" \
-    && ls -la /app \
-    && echo "=== Setting permissions ===" \
-    && chmod 755 /app/app.jar \
-    && ls -la /app/app.jar \
-    && echo "=== File permissions ===" \
-    && stat /app/app.jar
+# Debug: List contents after setting permissions
+RUN echo "=== Final contents of /app ===" && ls -la /app
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

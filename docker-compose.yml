@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   frontend:
     build:
@@ -22,8 +20,6 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      args:
-        - SPRING_PROFILES_ACTIVE=prod
     image: campus-repair-backend
     volumes:
       - maven_repo:/root/.m2
@@ -32,7 +28,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_PROFILES_ACTIVE=test
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/${MYSQL_DATABASE}
       - SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
       - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
