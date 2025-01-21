@@ -1,14 +1,7 @@
 services:
-  frontend:
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
-    command: npm run dev
 
   backend:
     volumes:
-      - ./backend:/app
       - maven-repo:/root/.m2
 
 volumes:

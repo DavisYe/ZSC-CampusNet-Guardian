@@ -70,9 +70,7 @@ public class SecurityConfig {
             // 设置未登录处理
             .exceptionHandling(handling -> handling
                 .authenticationEntryPoint((request, response, e) -> {
-                    response.setContentType("application/json;charset=UTF-8");
-                    response.setStatus(401);
-                    response.getWriter().write("{\"code\":401,\"message\":\"请先登录\",\"success\":false}");
+                    response.sendRedirect("/login");
                 })
                 .accessDeniedHandler((request, response, e) -> {
                     response.setContentType("application/json;charset=UTF-8");
