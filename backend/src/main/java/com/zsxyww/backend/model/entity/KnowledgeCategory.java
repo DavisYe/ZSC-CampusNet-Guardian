@@ -1,6 +1,7 @@
 package com.zsxyww.backend.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.zsxyww.backend.model.base.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,6 +15,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @Data
+@TableName("ww_knowledge_category")
 @EqualsAndHashCode(callSuper = true)
 public class KnowledgeCategory extends BaseEntity {
     

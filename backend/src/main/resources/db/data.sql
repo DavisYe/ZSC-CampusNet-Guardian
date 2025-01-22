@@ -41,7 +41,7 @@ VALUES (3, 11, NOW(), NOW(), 0);
 -- 初始化管理员账号
 -- 密码为admin123，使用BCryptPasswordEncoder加密
 INSERT INTO ww_user (id, username, password, phone, email, real_name, student_id, enabled, account_non_expired, account_non_locked, credentials_non_expired, create_time, update_time, deleted)
-VALUES (1, 'admin', '$2a$12$U0R7LVOhDGxQUaALnNKIb.IYpE0odEoav3aRZ5ktNblO0Z1O5/mba', '13800138000', 'admin@example.com', '系统管理员', '00000000', 1, 1, 1, 1, NOW(), NOW(), 0);
+VALUES (1, 'admin', '$2y$15$/cjVjMLdgISfRm5TL3p8zesGr4VChFCxQQ6X7VK5Y2Wty76WjqbjO', '13800138000', 'admin@example.com', '系统管理员', '00000000', 1, 1, 1, 1, NOW(), NOW(), 0);
 
 -- 初始化管理员角色
 INSERT INTO ww_user_role (user_id, role_id, create_time, update_time, deleted)
@@ -75,7 +75,7 @@ VALUES
 -- 普通用户
 INSERT INTO ww_user (id, username, password, phone, email, real_name, student_id, enabled, account_non_expired, account_non_locked, credentials_non_expired, create_time, update_time, deleted)
 VALUES 
-(2, 'testuser', '$2a$12$U0R7LVOhDGxQUaALnNKIb.IYpE0odEoav3aRZ5ktNblO0Z1O5/mba', '13800138001', 'testuser@example.com', '测试用户', '20240001', 1, 1, 1, 1, NOW(), NOW(), 0);
+(2, 'testuser', '$2y$15$/cjVjMLdgISfRm5TL3p8zesGr4VChFCxQQ6X7VK5Y2Wty76WjqbjO', '13800138001', 'testuser@example.com', '测试用户', '20240001', 1, 1, 1, 1, NOW(), NOW(), 0);
 
 INSERT INTO ww_user_role (user_id, role_id, create_time, update_time, deleted)
 VALUES (2, 3, NOW(), NOW(), 0);
@@ -83,7 +83,7 @@ VALUES (2, 3, NOW(), NOW(), 0);
 -- 维修人员
 INSERT INTO ww_user (id, username, password, phone, email, real_name, student_id, enabled, account_non_expired, account_non_locked, credentials_non_expired, create_time, update_time, deleted)
 VALUES 
-(3, 'teststaff', '$2a$12$U0R7LVOhDGxQUaALnNKIb.IYpE0odEoav3aRZ5ktNblO0Z1O5/mba', '13800138002', 'teststaff@example.com', '测试维修员', '20240002', 1, 1, 1, 1, NOW(), NOW(), 0);
+(3, 'teststaff', '$2y$15$/cjVjMLdgISfRm5TL3p8zesGr4VChFCxQQ6X7VK5Y2Wty76WjqbjO', '13800138002', 'teststaff@example.com', '测试维修员', '20240002', 1, 1, 1, 1, NOW(), NOW(), 0);
 
 INSERT INTO ww_user_role (user_id, role_id, create_time, update_time, deleted)
 VALUES (3, 2, NOW(), NOW(), 0);
@@ -91,12 +91,12 @@ VALUES (3, 2, NOW(), NOW(), 0);
 -- 注意：测试用户账号
 -- 普通用户
 -- 用户名：testuser
--- 密码：test123
+-- 密码：test1234
 -- 密码加密方式：BCryptPasswordEncoder
--- 加密后的密码：$2a$12$U0R7LVOhDGxQUaALnNKIb.IYpE0odEoav3aRZ5ktNblO0Z1O5/mba
+-- 加密后的密码：$2y$15$/cjVjMLdgISfRm5TL3p8zesGr4VChFCxQQ6X7VK5Y2Wty76WjqbjO
 
 -- 维修人员
 -- 用户名：teststaff
--- 密码：test123
+-- 密码：test1234
 -- 密码加密方式：BCryptPasswordEncoder
--- 加密后的密码：$2a$12$U0R7LVOhDGxQUaALnNKIb.IYpE0odEoav3aRZ5ktNblO0Z1O5/mba
+-- 加密后的密码：$2y$15$/cjVjMLdgISfRm5TL3p8zesGr4VChFCxQQ6X7VK5Y2Wty76WjqbjO

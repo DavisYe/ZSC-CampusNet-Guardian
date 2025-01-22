@@ -1,5 +1,6 @@
 package com.zsxyww.backend.model.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.zsxyww.backend.model.base.BaseEntity;
 import com.zsxyww.backend.model.enums.RepairOrderStatus;
 import com.zsxyww.backend.model.enums.RepairOrderType;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
  * @since 1.0.0
  */
 @Data
+@TableName("ww_repair_order")
 @EqualsAndHashCode(callSuper = true)
 public class RepairOrder extends BaseEntity {
     

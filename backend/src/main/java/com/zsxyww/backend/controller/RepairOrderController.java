@@ -7,6 +7,7 @@ import com.zsxyww.backend.model.dto.RepairOrderResponse;
 import com.zsxyww.backend.model.dto.UpdateOrderStatusRequest;
 import com.zsxyww.backend.model.entity.RepairOrder;
 import com.zsxyww.backend.model.entity.User;
+import com.zsxyww.backend.security.SecurityUser;
 import com.zsxyww.backend.service.RepairOrderService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -40,14 +41,24 @@ public class RepairOrderController {
     @PostMapping
     public Result<RepairOrderResponse> createOrder(
             @Parameter(description = "工单创建请求参数") @RequestBody @Valid CreateRepairOrderRequest request,
-            @Parameter(hidden = true) @AuthenticationPrincipal User user) {
+            @Parameter(hidden = true) @AuthenticationPrincipal Object principal) {
         RepairOrder order = new RepairOrder();
         order.setType(request.getType());
         order.setDescription(request.getDescription());
         order.setLocation(request.getLocation());
         order.setContactPhone(request.getContactPhone());
         order.setImages(request.getImages());
-        order.setUserId(user.getId());
+        
+        // 处理不同类型的认证主体
+        Long userId;
+        if (principal instanceof SecurityUser) {
+            userId = ((SecurityUser) principal).getId();
+        } else if (principal instanceof User) {
+            userId = ((User) principal).getId();
+        } else {
+            throw new IllegalStateException("Unexpected authentication principal type: " + principal.getClass());
+        }
+        order.setUserId(userId);
 
         return Result.success(convertToResponse(repairOrderService.createOrder(order)));
     }
@@ -88,9 +99,18 @@ public class RepairOrderController {
      */
     @GetMapping("/my")
     public Result<IPage<RepairOrderResponse>> getUserOrders(@RequestParam(defaultValue = "1") Integer page,
-                                                          @RequestParam(defaultValue = "10") Integer size,
-                                                          @AuthenticationPrincipal User user) {
-        IPage<RepairOrder> orders = repairOrderService.getUserOrders(user.getId(), page, size);
+                                                           @RequestParam(defaultValue = "10") Integer size,
+                                                           @AuthenticationPrincipal Object principal) {
+        // 处理不同类型的认证主体
+        Long userId;
+        if (principal instanceof SecurityUser) {
+            userId = ((SecurityUser) principal).getId();
+        } else if (principal instanceof User) {
+            userId = ((User) principal).getId();
+        } else {
+            throw new IllegalStateException("Unexpected authentication principal type: " + principal.getClass());
+        }
+        IPage<RepairOrder> orders = repairOrderService.getUserOrders(userId, page, size);
         return Result.success(orders.convert(this::convertToResponse));
     }
 

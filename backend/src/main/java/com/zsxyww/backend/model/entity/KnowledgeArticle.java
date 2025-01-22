@@ -1,5 +1,6 @@
 package com.zsxyww.backend.model.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.zsxyww.backend.model.base.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,6 +13,7 @@ import lombok.EqualsAndHashCode;
  * @since 1.0.0
  */
 @Data
+@TableName("ww_knowledge_article")
 @EqualsAndHashCode(callSuper = true)
 public class KnowledgeArticle extends BaseEntity {
     

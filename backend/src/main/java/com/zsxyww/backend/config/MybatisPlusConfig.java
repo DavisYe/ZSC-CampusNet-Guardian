@@ -2,27 +2,47 @@ package com.zsxyww.backend.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import javax.sql.DataSource;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @MapperScan("com.zsxyww.backend.mapper")
+@RequiredArgsConstructor
 public class MybatisPlusConfig {
+
+    private final Environment env;
 
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        // 添加分页插件
-        PaginationInnerInterceptor paginationInterceptor = new PaginationInnerInterceptor(DbType.MYSQL);
-        // 设置最大单页限制数量，默认 500 条，-1 不受限制
+        
+        // 分页配置，根据环境选择数据库类型
+        PaginationInnerInterceptor paginationInterceptor = new PaginationInnerInterceptor();
+        // 在测试环境中使用H2数据库
+        String[] activeProfiles = env.getActiveProfiles();
+        boolean isTestProfile = false;
+        for (String profile : activeProfiles) {
+            if ("test".equals(profile)) {
+                isTestProfile = true;
+                break;
+            }
+        }
+        paginationInterceptor.setDbType(isTestProfile ? DbType.H2 : DbType.MYSQL);
         paginationInterceptor.setMaxLimit(500L);
         interceptor.addInnerInterceptor(paginationInterceptor);
+        
+        // 防止全表更新与删除
+        interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
+        
         return interceptor;
     }
 

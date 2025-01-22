@@ -1,5 +1,6 @@
 package com.zsxyww.backend.model.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.zsxyww.backend.model.base.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,6 +14,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
+@TableName("ww_user")
 public class User extends BaseEntity {
     
     /**
