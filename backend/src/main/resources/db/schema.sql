@@ -1,5 +1,8 @@
 -- 用户表
-CREATE TABLE IF NOT EXISTS `user` (
+-- 兼容MySQL和H2的用户表定义
+DROP TABLE IF EXISTS `ww_user`;
+
+CREATE TABLE `ww_user` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     `username` VARCHAR(50) NOT NULL COMMENT '用户名',
     `password` VARCHAR(100) NOT NULL COMMENT '密码',
@@ -18,14 +21,16 @@ CREATE TABLE IF NOT EXISTS `user` (
     `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted` TINYINT(1) DEFAULT 0 COMMENT '是否删除',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_username` (`username`),
-    UNIQUE KEY `uk_student_id` (`student_id`),
-    KEY `idx_phone` (`phone`),
-    KEY `idx_email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+    UNIQUE KEY `uk_user_username` (`username`),
+    UNIQUE KEY `uk_user_student_id` (`student_id`),
+    KEY `idx_user_phone` (`phone`),
+    KEY `idx_user_email` (`email`)
+) COMMENT='用户表';
 
--- 角色表
-CREATE TABLE IF NOT EXISTS `role` (
+-- 兼容MySQL和H2的角色表定义
+DROP TABLE IF EXISTS `ww_role`;
+
+CREATE TABLE `ww_role` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     `name` VARCHAR(50) NOT NULL COMMENT '角色名称',
     `code` VARCHAR(50) NOT NULL COMMENT '角色编码',
@@ -36,11 +41,14 @@ CREATE TABLE IF NOT EXISTS `role` (
     `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted` TINYINT(1) DEFAULT 0 COMMENT '是否删除',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_code` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色表';
+    UNIQUE KEY `uk_role_code` (`code`)
+) COMMENT='角色表';
 
 -- 权限表
-CREATE TABLE IF NOT EXISTS `permission` (
+-- 兼容MySQL和H2的权限表定义
+DROP TABLE IF EXISTS `ww_permission`;
+
+CREATE TABLE `ww_permission` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     `name` VARCHAR(50) NOT NULL COMMENT '权限名称',
     `code` VARCHAR(50) NOT NULL COMMENT '权限编码',
@@ -56,12 +64,14 @@ CREATE TABLE IF NOT EXISTS `permission` (
     `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted` TINYINT(1) DEFAULT 0 COMMENT '是否删除',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_code` (`code`),
-    KEY `idx_parent_id` (`parent_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='权限表';
+    UNIQUE KEY `uk_permission_code` (`code`),
+    KEY `idx_permission_parent_id` (`parent_id`)
+) COMMENT='权限表';
 
--- 用户角色关联表
-CREATE TABLE IF NOT EXISTS `user_role` (
+-- 兼容MySQL和H2的用户角色关联表定义
+DROP TABLE IF EXISTS `ww_user_role`;
+
+CREATE TABLE `ww_user_role` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     `user_id` BIGINT NOT NULL COMMENT '用户ID',
     `role_id` BIGINT NOT NULL COMMENT '角色ID',
@@ -70,10 +80,12 @@ CREATE TABLE IF NOT EXISTS `user_role` (
     `deleted` TINYINT(1) DEFAULT 0 COMMENT '是否删除',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_user_role` (`user_id`, `role_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户角色关联表';
+) COMMENT='用户角色关联表';
 
--- 角色权限关联表
-CREATE TABLE IF NOT EXISTS `role_permission` (
+-- 兼容MySQL和H2的角色权限关联表定义
+DROP TABLE IF EXISTS `ww_role_permission`;
+
+CREATE TABLE `ww_role_permission` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     `role_id` BIGINT NOT NULL COMMENT '角色ID',
     `permission_id` BIGINT NOT NULL COMMENT '权限ID',
@@ -82,10 +94,13 @@ CREATE TABLE IF NOT EXISTS `role_permission` (
     `deleted` TINYINT(1) DEFAULT 0 COMMENT '是否删除',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_role_permission` (`role_id`, `permission_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色权限关联表';
+) COMMENT='角色权限关联表';
 
 -- 报修工单表
-CREATE TABLE IF NOT EXISTS `repair_order` (
+-- 兼容MySQL和H2的报修工单表定义
+DROP TABLE IF EXISTS `ww_repair_order`;
+
+CREATE TABLE `ww_repair_order` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     `order_no` VARCHAR(50) NOT NULL COMMENT '工单编号',
     `user_id` BIGINT NOT NULL COMMENT '报修用户ID',
@@ -110,15 +125,17 @@ CREATE TABLE IF NOT EXISTS `repair_order` (
     `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted` TINYINT(1) DEFAULT 0 COMMENT '是否删除',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_order_no` (`order_no`),
-    KEY `idx_user_id` (`user_id`),
-    KEY `idx_handler_id` (`handler_id`),
-    KEY `idx_status` (`status`),
-    KEY `idx_type` (`type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='报修工单表';
+    UNIQUE KEY `uk_repair_order_no` (`order_no`),
+    KEY `idx_repair_order_user_id` (`user_id`),
+    KEY `idx_repair_order_handler_id` (`handler_id`),
+    KEY `idx_repair_order_status` (`status`),
+    KEY `idx_repair_order_type` (`type`)
+) COMMENT='报修工单表';
 
--- 知识库分类表
-CREATE TABLE IF NOT EXISTS `knowledge_category` (
+-- 兼容MySQL和H2的知识库分类表定义
+DROP TABLE IF EXISTS `ww_knowledge_category`;
+
+CREATE TABLE `ww_knowledge_category` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     `name` VARCHAR(50) NOT NULL COMMENT '分类名称',
     `code` VARCHAR(50) NOT NULL COMMENT '分类编码',
@@ -131,12 +148,14 @@ CREATE TABLE IF NOT EXISTS `knowledge_category` (
     `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted` TINYINT(1) DEFAULT 0 COMMENT '是否删除',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_code` (`code`),
-    KEY `idx_parent_id` (`parent_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='知识库分类表';
+    UNIQUE KEY `uk_knowledge_category_code` (`code`),
+    KEY `idx_knowledge_category_parent_id` (`parent_id`)
+) COMMENT='知识库分类表';
 
--- 知识库文章表
-CREATE TABLE IF NOT EXISTS `knowledge_article` (
+-- 兼容MySQL和H2的知识库文章表定义
+DROP TABLE IF EXISTS `ww_knowledge_article`;
+
+CREATE TABLE `ww_knowledge_article` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     `title` VARCHAR(255) NOT NULL COMMENT '文章标题',
     `content` TEXT NOT NULL COMMENT '文章内容',
@@ -160,4 +179,4 @@ CREATE TABLE IF NOT EXISTS `knowledge_article` (
     KEY `idx_category_id` (`category_id`),
     KEY `idx_author_id` (`author_id`),
     KEY `idx_status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='知识库文章表';
+)  COMMENT='知识库文章表';

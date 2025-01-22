@@ -1,67 +1,73 @@
 spring:
-  # 数据库配置
   datasource:
-    url: jdbc:mysql://localhost:3306/test_database
-    username: test_user
-    password: test_password
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
     hikari:
       maximum-pool-size: 5
-      minimum-idle: 3
-      
-  # Redis配置
+      minimum-idle: 1
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+    sql:
+      init:
+        mode: always
+        schema-locations: classpath:db/schema.sql
+        data-locations: classpath:db/data-h2.sql
+        encoding: UTF-8
+
   data:
     redis:
-      host: localhost
+      host: ${SPRING_REDIS_HOST:localhost}
       port: 6379
-      password: test_redis_password
-      database: 1
+      password: ${REDIS_PASSWORD:your_redis_password}
+      database: 0
+      timeout: 10000
       lettuce:
         pool:
-          max-active: 4
-          max-idle: 4
-          min-idle: 1
-        
-  # RabbitMQ配置
+          max-active: 8
+          max-wait: -1
+          max-idle: 8
+          min-idle: 0
+
   rabbitmq:
-    host: localhost
+    host: ${SPRING_RABBITMQ_HOST:localhost}
     port: 5672
-    username: test_rabbitmq_user
-    password: test_rabbitmq_password
+    username: ${RABBITMQ_USER:repair_user}
+    password: ${RABBITMQ_PASSWORD:your_rabbitmq_password}
+    virtual-host: /
     listener:
       simple:
-        concurrency: 3
-        max-concurrency: 6
-        
-  # 日志配置
-  logging:
-    level:
-      root: INFO
-      com.zsxyww.backend: DEBUG
-    file:
-      name: /var/log/zsxyww-backend/test-application.log
-      max-size: 50MB
-      max-history: 10
-      
-  # 安全配置
-  security:
-    jwt:
-      secret: test_jwt_secret
-      expiration: 3600000
-      
-  # 文件上传配置
-  upload:
-    path: /data/test-uploads
-    max-size: 5MB
+        acknowledge-mode: manual
+        prefetch: 1
 
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
-    sql-session-factory:
-      mapper-locations: classpath*:mapper/*.xml
-  # 分页插件配置
-  pagehelper:
-    helper-dialect: mysql
-    reasonable: true
-    support-methods-arguments: true
-    params: count=countSql
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+
+logging:
+  level:
+    root: INFO
+    com.zsxyww.backend: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+
+test:
+  swagger-enabled: false
+  show-sql: true
+  cors-enabled: false
+  cache-enabled: false
+  mq-enabled: false
+  upload-enabled: false
+  mail-enabled: false
+  sms-enabled: false
+  captcha-enabled: false
+  websocket-enabled: false
+  scheduler-enabled: false
+  async-enabled: false
+  transaction-enabled: true
+  aop-enabled: true
+  monitor-enabled: false

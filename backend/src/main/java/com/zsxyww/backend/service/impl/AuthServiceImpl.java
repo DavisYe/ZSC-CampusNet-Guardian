@@ -1,8 +1,10 @@
 package com.zsxyww.backend.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.zsxyww.backend.config.JwtConfig;
 import com.zsxyww.backend.exception.BusinessException;
 import com.zsxyww.backend.mapper.UserMapper;
+import com.zsxyww.backend.mapper.UserRoleMapper;
 import com.zsxyww.backend.model.dto.*;
 import com.zsxyww.backend.model.entity.User;
 import com.zsxyww.backend.model.entity.UserRole;
@@ -37,6 +39,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil;
     private final JwtConfig jwtConfig;
     private final UserMapper userMapper;
+    private final UserRoleMapper userRoleMapper;
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -68,12 +71,16 @@ public class AuthServiceImpl implements AuthService {
         }
         
         // 验证用户名是否已存在
-        if (userMapper.findByUsername(request.getUsername()) != null) {
+        if (userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .eq(User::getUsername, request.getUsername())
+                .eq(User::getDeleted, 0)) != null) {
             throw new BusinessException("用户名已存在");
         }
         
         // 验证学号是否已存在
-        if (userMapper.findByStudentId(request.getStudentId()) != null) {
+        if (userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .eq(User::getStudentId, request.getStudentId())
+                .eq(User::getDeleted, 0)) != null) {
             throw new BusinessException("学号已被注册");
         }
         
@@ -96,7 +103,7 @@ public class AuthServiceImpl implements AuthService {
         UserRole userRole = new UserRole();
         userRole.setUserId(user.getId());
         userRole.setRoleId(3L); // 普通用户角色ID为3
-        userMapper.insertUserRole(userRole);
+        userRoleMapper.insert(userRole);
         
         // 登录新用户
         return login(new LoginRequest() {{
@@ -113,12 +120,16 @@ public class AuthServiceImpl implements AuthService {
         
         for (BatchCreateUserRequest request : requests) {
             // 验证学号是否已存在
-            if (userMapper.findByStudentId(request.getStudentId()) != null) {
+            if (userMapper.selectOne(new LambdaQueryWrapper<User>()
+                    .eq(User::getStudentId, request.getStudentId())
+                    .eq(User::getDeleted, 0)) != null) {
                 throw new BusinessException("学号已被注册：" + request.getStudentId());
             }
             
             // 验证用户名是否已存在
-            if (userMapper.findByUsername(request.getUsername()) != null) {
+            if (userMapper.selectOne(new LambdaQueryWrapper<User>()
+                    .eq(User::getUsername, request.getUsername())
+                    .eq(User::getDeleted, 0)) != null) {
                 throw new BusinessException("用户名已存在：" + request.getUsername());
             }
             
@@ -139,7 +150,9 @@ public class AuthServiceImpl implements AuthService {
         }
         
         // 批量插入用户
-        int count = userMapper.batchInsertUsers(users);
+        for (User user : users) {
+            userMapper.insert(user);
+        }
         
         // 为每个用户分配普通用户角色
         for (User user : users) {
@@ -150,9 +163,11 @@ public class AuthServiceImpl implements AuthService {
         }
         
         // 批量插入用户角色关系
-        userMapper.batchInsertUserRoles(userRoles);
+        for (UserRole userRole : userRoles) {
+            userRoleMapper.insert(userRole);
+        }
         
-        return count;
+        return users.size();
     }
 
     @Override
@@ -169,7 +184,6 @@ public class AuthServiceImpl implements AuthService {
         }
         
         // 获取用户信息
-        String username = jwtUtil.getUsernameFromToken(oldToken);
         SecurityUser securityUser = (SecurityUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         
         // 生成新token

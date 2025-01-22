@@ -1,5 +1,7 @@
 package com.zsxyww.backend.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -14,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 /**
  * 报修工单服务实现类
@@ -40,11 +44,13 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
         
         // 设置创建人
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userMapper.findByUsername(username);
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                .eq(User::getUsername, username)
+                .eq(User::getDeleted, 0));
         repairOrder.setUserId(user.getId());
         
         // 保存工单
-        repairOrderMapper.insert(repairOrder);
+        save(repairOrder);
         return repairOrder;
     }
 
@@ -63,8 +69,17 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
         validateStatusTransition(order.getStatus(), newStatus);
         
         // 更新状态
-        int rows = repairOrderMapper.updateOrderStatus(orderId, status, remark);
-        if (rows == 0) {
+        LambdaUpdateWrapper<RepairOrder> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(RepairOrder::getId, orderId)
+                .eq(RepairOrder::getDeleted, 0)
+                .set(RepairOrder::getStatus, status)
+                .set(RepairOrder::getHandleRemark, remark)
+                .set(status == 1, RepairOrder::getHandleStartTime, LocalDateTime.now())
+                .set(status == 3, RepairOrder::getHandleEndTime, LocalDateTime.now())
+                .set(RepairOrder::getUpdateTime, LocalDateTime.now());
+        
+        boolean success = update(null, updateWrapper);
+        if (!success) {
             throw new BusinessException("更新工单状态失败");
         }
         
@@ -89,8 +104,16 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
         }
         
         // 分配处理人
-        int rows = repairOrderMapper.assignHandler(orderId, handlerId);
-        if (rows == 0) {
+        LambdaUpdateWrapper<RepairOrder> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(RepairOrder::getId, orderId)
+                .eq(RepairOrder::getDeleted, 0)
+                .set(RepairOrder::getHandlerId, handlerId)
+                .set(RepairOrder::getStatus, RepairOrderStatus.PROCESSING.getCode())
+                .set(RepairOrder::getHandleStartTime, LocalDateTime.now())
+                .set(RepairOrder::getUpdateTime, LocalDateTime.now());
+        
+        boolean success = update(null, updateWrapper);
+        if (!success) {
             throw new BusinessException("分配工单失败");
         }
         
@@ -113,8 +136,16 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
         }
         
         // 保存评价
-        int rows = repairOrderMapper.evaluateOrder(orderId, rating, evaluation);
-        if (rows == 0) {
+        LambdaUpdateWrapper<RepairOrder> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(RepairOrder::getId, orderId)
+                .eq(RepairOrder::getDeleted, 0)
+                .set(RepairOrder::getRating, rating)
+                .set(RepairOrder::getEvaluation, evaluation)
+                .set(RepairOrder::getEvaluationTime, LocalDateTime.now())
+                .set(RepairOrder::getUpdateTime, LocalDateTime.now());
+        
+        boolean success = update(null, updateWrapper);
+        if (!success) {
             throw new BusinessException("评价工单失败");
         }
         
@@ -123,17 +154,30 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
 
     @Override
     public IPage<RepairOrder> getUserOrders(Long userId, Integer page, Integer size) {
-        return repairOrderMapper.selectUserOrders(new Page<>(page, size), userId);
+        LambdaQueryWrapper<RepairOrder> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(RepairOrder::getUserId, userId)
+                .eq(RepairOrder::getDeleted, 0)
+                .orderByDesc(RepairOrder::getCreateTime);
+        return page(new Page<>(page, size), queryWrapper);
     }
 
     @Override
     public IPage<RepairOrder> getHandlerOrders(Long handlerId, Integer page, Integer size) {
-        return repairOrderMapper.selectHandlerOrders(new Page<>(page, size), handlerId);
+        LambdaQueryWrapper<RepairOrder> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(RepairOrder::getHandlerId, handlerId)
+                .eq(RepairOrder::getDeleted, 0)
+                .orderByDesc(RepairOrder::getCreateTime);
+        return page(new Page<>(page, size), queryWrapper);
     }
 
     @Override
     public IPage<RepairOrder> getAllOrders(Integer status, Integer type, Integer page, Integer size) {
-        return repairOrderMapper.selectAllOrders(new Page<>(page, size), status, type);
+        LambdaQueryWrapper<RepairOrder> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(RepairOrder::getDeleted, 0)
+                .eq(status != null, RepairOrder::getStatus, status)
+                .eq(type != null, RepairOrder::getType, type)
+                .orderByDesc(RepairOrder::getCreateTime);
+        return page(new Page<>(page, size), queryWrapper);
     }
 
     @Override
@@ -147,8 +191,16 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
         }
         
         // 上报工单
-        int rows = repairOrderMapper.reportOrder(orderId, reason);
-        if (rows == 0) {
+        LambdaUpdateWrapper<RepairOrder> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(RepairOrder::getId, orderId)
+                .eq(RepairOrder::getDeleted, 0)
+                .set(RepairOrder::getNeedReport, 1)
+                .set(RepairOrder::getReportReason, reason)
+                .set(RepairOrder::getStatus, RepairOrderStatus.REPORTED.getCode())
+                .set(RepairOrder::getUpdateTime, LocalDateTime.now());
+        
+        boolean success = update(null, updateWrapper);
+        if (!success) {
             throw new BusinessException("上报工单失败");
         }
         

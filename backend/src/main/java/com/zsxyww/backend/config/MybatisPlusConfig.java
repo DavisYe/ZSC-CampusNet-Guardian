@@ -40,7 +40,7 @@ public class MybatisPlusConfig {
         
         // 设置分页插件
         sqlSessionFactory.setPlugins(mybatisPlusInterceptor());
-        
+                
         return sqlSessionFactory.getObject();
     }
 }

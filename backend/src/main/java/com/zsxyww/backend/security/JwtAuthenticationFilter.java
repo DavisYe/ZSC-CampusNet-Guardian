@@ -38,6 +38,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
+        // 处理OPTIONS请求
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            chain.doFilter(request, response);
+            return;
+        }
+        
         // 检查是否是忽略的URL
         String requestURI = request.getRequestURI();
         for (String ignoreUrl : jwtConfig.getIgnoreUrls()) {

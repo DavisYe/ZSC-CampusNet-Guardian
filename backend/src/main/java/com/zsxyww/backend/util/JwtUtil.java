@@ -168,4 +168,15 @@ public class JwtUtil {
         }
         return false;
     }
+
+    /**
+     * 刷新token
+     *
+     * @param oldToken 旧token
+     * @return 新token
+     */
+    public String refreshToken(String oldToken) {
+        final Claims claims = getAllClaimsFromToken(oldToken);
+        return doGenerateToken(claims, claims.getSubject());
+    }
 }
